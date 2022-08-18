@@ -30,21 +30,29 @@ LDFLAGS = \
 -X $(PROJECT)/version.Branch=$(BRANCH)
 
 EXPORTER_SRC = $(wildcard cmd/fakedev-exporter/*.go)
+WORKLOAD_SRC = $(wildcard cmd/fakedev-workload/*.go)
 
 
 # static binaries
 #
 # packages: golang (v1.18 or newer)
-static: fakedev-exporter
+static: fakedev-exporter fakedev-workload
 
 fakedev-exporter: $(EXPORTER_SRC)
+	go build $(BUILDMODE) -tags $(GOTAGS) -ldflags "$(LDFLAGS)" -o $@ $^
+
+fakedev-workload: $(WORKLOAD_SRC)
 	go build $(BUILDMODE) -tags $(GOTAGS) -ldflags "$(LDFLAGS)" -o $@ $^
 
 
 # memory analysis binary versions
 #
 # packages: clang
-msan: fakedev-exporter-msan
+msan: fakedev-workload-msan fakedev-exporter-msan
+
+# "-msan" requires "CC=clang", dynamic
+fakedev-workload-msan: $(WORKLOAD_SRC)
+	CC=clang go build -msan $(BUILDMODE) -o $@ $^
 
 fakedev-exporter-msan: $(EXPORTER_SRC)
 	CC=clang go build -msan $(BUILDMODE) -o $@ $^
@@ -69,8 +77,10 @@ check:
 mod:
 	go mod tidy
 
+
 clean:
-	rm -rf fakedev-exporter fakedev-exporter-*
+	rm -rf fakedev-exporter fakedev-exporter-* \
+	       fakedev-workload fakedev-workload-*
 
 goclean: clean
 	go clean --modcache

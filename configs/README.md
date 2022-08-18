@@ -8,6 +8,7 @@ Here are example JSON specs for different fakedev-exporter configuration categor
 * [identity/](identity/)
   - Prometheus exporter identities to fake (`-identity` option)
 * [workloads/](workloads/)
-  - example workloads to simulate on the faked devices (`-wl-all`, `-wl-odd`, `-wl-even` options)
+  - example workloads to simulate on the faked devices
+    (`-wl-all`, `-wl-odd`, `-wl-even` server options, `-json` client option)
 
 You need to specify at least device type, device list and exporter identity.
