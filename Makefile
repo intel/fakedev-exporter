@@ -102,6 +102,13 @@ mod:
 	go mod tidy
 
 
+# checks for auxiliary / test scripts
+
+# packages: shellcheck
+shellcheck:
+	find . -name '*.sh' | xargs shellcheck
+
+
 clean:
 	rm -rf fakedev-exporter fakedev-exporter-* \
 	       fakedev-workload fakedev-workload-* \
@@ -110,4 +117,5 @@ clean:
 goclean: clean
 	go clean --modcache
 
-.PHONY: static msan race test-msan test-race testall check mod clean goclean
+.PHONY: static msan race test-msan test-race testall \
+	check shellcheck mod clean goclean
