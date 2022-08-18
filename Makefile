@@ -67,6 +67,23 @@ fakedev-exporter-race: $(EXPORTER_SRC)
 	   -tags $(GOTAGS) -o $@ $^
 
 
+BINDIR ?= $(shell pwd)
+
+# packages: wget psmisc diffutils
+test-msan: fakedev-exporter-msan fakedev-workload-msan
+	./test-exporter.sh \
+	  $(BINDIR)/fakedev-exporter-msan \
+	  $(BINDIR)/fakedev-workload-msan
+
+# packages: wget psmisc diffutils
+test-race: fakedev-exporter-race fakedev-workload
+	./test-exporter.sh \
+	  $(BINDIR)/fakedev-exporter-race \
+	  $(BINDIR)/fakedev-workload
+
+testall: test-race test-msan
+
+
 # packages: golang-x-lint (Fedora)
 # or: go get -u golang.org/x/lint/golint
 check:
@@ -85,4 +102,4 @@ clean:
 goclean: clean
 	go clean --modcache
 
-.PHONY: static msan race check mod clean goclean
+.PHONY: static msan race test-msan test-race testall check mod clean goclean
