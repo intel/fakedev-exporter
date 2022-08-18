@@ -31,17 +31,21 @@ LDFLAGS = \
 
 EXPORTER_SRC = $(wildcard cmd/fakedev-exporter/*.go)
 WORKLOAD_SRC = $(wildcard cmd/fakedev-workload/*.go)
+INVALID_SRC  = $(wildcard cmd/invalid-workload/*.go)
 
 
 # static binaries
 #
 # packages: golang (v1.18 or newer)
-static: fakedev-exporter fakedev-workload
+static: fakedev-exporter fakedev-workload invalid-workload
 
 fakedev-exporter: $(EXPORTER_SRC)
 	go build $(BUILDMODE) -tags $(GOTAGS) -ldflags "$(LDFLAGS)" -o $@ $^
 
 fakedev-workload: $(WORKLOAD_SRC)
+	go build $(BUILDMODE) -tags $(GOTAGS) -ldflags "$(LDFLAGS)" -o $@ $^
+
+invalid-workload: $(INVALID_SRC)
 	go build $(BUILDMODE) -tags $(GOTAGS) -ldflags "$(LDFLAGS)" -o $@ $^
 
 
@@ -97,7 +101,8 @@ mod:
 
 clean:
 	rm -rf fakedev-exporter fakedev-exporter-* \
-	       fakedev-workload fakedev-workload-*
+	       fakedev-workload fakedev-workload-* \
+	       invalid-workload
 
 goclean: clean
 	go clean --modcache
