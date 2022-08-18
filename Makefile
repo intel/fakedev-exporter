@@ -74,16 +74,18 @@ fakedev-exporter-race: $(EXPORTER_SRC)
 BINDIR ?= $(shell pwd)
 
 # packages: wget psmisc diffutils
-test-msan: fakedev-exporter-msan fakedev-workload-msan
+test-msan: fakedev-exporter-msan fakedev-workload-msan invalid-workload
 	./test-exporter.sh \
 	  $(BINDIR)/fakedev-exporter-msan \
-	  $(BINDIR)/fakedev-workload-msan
+	  $(BINDIR)/fakedev-workload-msan \
+	  $(BINDIR)/invalid-workload
 
 # packages: wget psmisc diffutils
-test-race: fakedev-exporter-race fakedev-workload
+test-race: fakedev-exporter-race fakedev-workload invalid-workload
 	./test-exporter.sh \
 	  $(BINDIR)/fakedev-exporter-race \
-	  $(BINDIR)/fakedev-workload
+	  $(BINDIR)/fakedev-workload \
+	  $(BINDIR)/invalid-workload
 
 testall: test-race test-msan
 

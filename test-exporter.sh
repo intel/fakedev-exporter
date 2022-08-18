@@ -20,7 +20,7 @@ error_exit () {
 	fi
 	echo "Test script for 'fakedev-exporter'."
 	echo
-	echo "Usage: ${0##*/} [fakedev-exporter [fakedev-workload]]"
+	echo "Usage: ${0##*/} [fakedev-exporter [fakedev-workload [invalid-workload]]]"
 	echo
 	echo "Paths to given fakedev-* binaries need to be absolute."
 	echo
@@ -49,11 +49,19 @@ if [ $# -gt 0 ]; then
 	WORKLOAD="$1"
 	shift
 fi
+INVALID="$PWD/invalid-workload"
+if [ $# -gt 0 ]; then
+	INVALID="$1"
+	shift
+fi
 if [ ! -x "$FAKEDEV" ]; then
 	error_exit "'$FAKEDEV' (fakedev-exporter) missing, or not executable"
 fi
 if [ ! -x "$WORKLOAD" ]; then
 	error_exit "'$WORKLOAD' (fakedev-workload) missing, or not executable"
+fi
+if [ ! -x "$INVALID" ]; then
+	error_exit "'$INVALID' (invalid-workload) missing, or not executable"
 fi
 
 if ! cd "${0%/*}/configs"; then
@@ -79,6 +87,12 @@ if ! cd -; then
 fi
 
 export http_proxy=
+
+echo "$LINE"
+echo "*** Check that server does not accept invalid WL specs ***"
+if ! "$INVALID" -devnames "$DEVICES" -socket $SOCKET --url $TEST_URL; then
+	error_exit "communication failure, or server accepted invalid WL spec"
+fi
 
 echo "$LINE"
 echo "*** Test parallel queries ***"
