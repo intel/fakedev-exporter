@@ -1,0 +1,17 @@
+{
+	"DeviceLabelMap": {
+		"pciid": "pci_dev",
+		"addr":  "pci_bdf",
+		"file":  "dev_file"
+	},
+	"MetricMap": {
+		"frequency":   "xpum_frequency_mhz",
+		"memory":      "xpum_memory_used_bytes",
+		"power":       "xpum_power_watts",
+		"temperature": "xpum_temperature_celsius"
+	},
+	"MetricLabels": {
+		"frequency":   { "location": "gpu", "type": "actual" },
+		"temperature": { "location": "gpu" }
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"DeviceLabels": {
+		"pciid": "0x4905",
+		"name":  "Intel(R) Iris(R) Xe MAX Graphics [0x4905]"
+	},
+	"MetricLimits": {
+		"frequency": {
+			"Min": 300,
+			"Max": 1650
+		},
+		"memory": {
+			"Min": 1048576,
+			"Max": 4007657472
+		},
+		"power": {
+			"Min": 3,
+			"Max": 35
+		},
+		"temperature": {
+			"Min": 20,
+			"Max": 90
+		}
+	}
+}

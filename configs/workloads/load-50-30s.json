@@ -1,0 +1,21 @@
+{
+	"Name": "load-50-30s",
+	"Repeat": 1,
+	"Profile": [
+		{
+			"Load": 10,
+			"Fluctuation": 2,
+			"Seconds": 6
+		},
+		{
+			"Load": 50,
+			"Fluctuation": 6,
+			"Seconds": 30
+		},
+		{
+			"Load": 10,
+			"Fluctuation": 2,
+			"Seconds": 6
+		}
+	]
+}

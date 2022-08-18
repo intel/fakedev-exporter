@@ -1,0 +1,18 @@
+{
+	"DeviceLabelMap": {
+		"pciid": "pci_dev",
+		"addr":  "pci_bdf",
+		"file":  "dev_file"
+	},
+	"MetricMap": {
+		"frequency":   "collectd_gpu_sysman_frequency_mhz",
+		"memory":      "collectd_gpu_sysman_memory_used_bytes",
+		"power":       "collectd_gpu_sysman_power_watts",
+		"temperature": "collectd_gpu_sysman_temperature_celsius"
+	},
+	"MetricLabels": {
+		"frequency":   { "location": "gpu", "type": "actual", "function": "max" },
+		"memory":      { "location": "device", "function": "max" },
+		"temperature": { "location": "gpu-max" }
+	}
+}

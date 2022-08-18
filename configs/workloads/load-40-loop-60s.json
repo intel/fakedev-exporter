@@ -1,0 +1,35 @@
+{
+	"Name": "load-40-loop-60s",
+	"Profile": [
+		{
+			"Load": 5,
+			"Fluctuation": 3,
+			"Seconds": 5
+		},
+		{
+			"Load": 20,
+			"Fluctuation": 5,
+			"Seconds": 5
+		},
+		{
+			"Load": 40,
+			"Fluctuation": 8,
+			"Seconds": 20
+		},
+		{
+			"Load": 20,
+			"Fluctuation": 5,
+			"Seconds": 5
+		},
+		{
+			"Load": 5,
+			"Fluctuation": 3,
+			"Seconds": 5
+		},
+		{
+			"Load": 2,
+			"Fluctuation": 1,
+			"Seconds": 20
+		}
+	]
+}

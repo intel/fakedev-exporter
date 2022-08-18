@@ -1,0 +1,9 @@
+{
+	"Name": "load-10",
+	"Profile": [
+		{
+			"Load": 10,
+			"Fluctuation": 5
+		}
+	]
+}
