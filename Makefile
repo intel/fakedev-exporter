@@ -88,6 +88,7 @@ test-race: fakedev-exporter-race fakedev-workload invalid-workload
 	  $(BINDIR)/invalid-workload
 
 testall: test-race test-msan
+	./test-deployment.sh
 
 
 # packages: golang-x-lint (Fedora)
