@@ -1,4 +1,5 @@
 fakedev-exporter
+fakedev-exporter-msan
 fakedev-exporter-race
 fakedev-workload
 fakedev-workload-msan
