@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: fakedev-exporter
+  namespace: monitoring
+spec:
+  endpoints:
+  - interval: 4s
+    port: http
+    relabelings:
+    - action: replace
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+  selector:
+    matchLabels:
+      app: fakedev-exporter
