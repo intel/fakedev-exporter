@@ -1,0 +1,18 @@
+      - seriesQuery: '{__name__="xpum_power_watts",dev_file="CARD"}'
+        metricsQuery: 'xpum_power_watts{dev_file="CARD"}'
+        name:
+          matches: ^xpum_power_watts
+          as: "sysman_power_CARD"
+        resources:
+          overrides:
+            node:
+              resource: node
+      - seriesQuery: '{__name__="xpum_temperature_celsius",location="gpu",dev_file="CARD"}'
+        metricsQuery: 'xpum_temperature_celsius{location="gpu",dev_file="CARD"}'
+        name:
+          matches: ^xpum_temperature_celsius
+          as: "sysman_temperature_CARD"
+        resources:
+          overrides:
+            node:
+              resource: node

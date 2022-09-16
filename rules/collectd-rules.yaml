@@ -1,0 +1,18 @@
+      - seriesQuery: '{__name__="collectd_gpu_sysman_power_watts",dev_file="CARD"}'
+        metricsQuery: 'collectd_gpu_sysman_power_watts{dev_file="CARD"}'
+        name:
+          matches: ^collectd_gpu_sysman_power_watts
+          as: "sysman_power_CARD"
+        resources:
+          overrides:
+            node:
+              resource: node
+      - seriesQuery: '{__name__="collectd_gpu_sysman_temperature_celsius",location="gpu-max",dev_file="CARD"}'
+        metricsQuery: 'collectd_gpu_sysman_temperature_celsius{location="gpu-max",dev_file="CARD"}'
+        name:
+          matches: ^collectd_gpu_sysman_temperature_celsius
+          as: "sysman_temperature_CARD"
+        resources:
+          overrides:
+            node:
+              resource: node

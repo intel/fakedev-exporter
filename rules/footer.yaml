@@ -1,0 +1,4 @@
+kind: ConfigMap
+metadata:
+  name: adapter-config
+  namespace: monitoring
