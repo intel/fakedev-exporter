@@ -1,0 +1,71 @@
+# Deploy to suitable test namespace:
+#   kubectl create -f fakedev-workload-batch.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fakedev-workload-batch
+  namespace: validation
+spec:
+  backoffLimit: 1
+  parallelism: 170
+  completions: 170
+  # To get JOB_COMPLETION_INDEX, when not using device plugin:
+  # https://kubernetes.io/docs/concepts/workloads/controllers/job/#completion-mode
+  #completionMode: Indexed
+  template:
+    metadata:
+      labels:
+        app: fakedev-workload-batch
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        gpu.intel.com/platform_fake_DG1.present: "true"
+      containers:
+      - name: fakedev-workload
+        imagePullPolicy: Always
+        image: intel/fakedev-exporter:latest
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsUser: 65534
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop: [ "ALL" ]
+        resources:
+          limits:
+            gpu.intel.com/i915: 1
+            # value should correspond to "--activity" percentage (100mc = 10%)
+            gpu.intel.com/millicores: 100
+        # Options:
+        #   -name: workload name to use in fakedev-exporter server logs
+        #   -socket: fakedev-exporter server socket location
+        #   -activity: comma separated list of <load>:<fluctuation>:<seconds> values
+        #              (to see all instances running in parallel, seconds should be
+        #              >= 2x parallelism, as k8s rate-limits pod startups)
+        #   -repeat: how many times listed activity/ies are simulated
+        # When requesting device(s) from GPU plugin:
+        #   -devices: glob pattern for device files mapped to the container
+        # When running without GPU plugin / device requests:
+        #   -devnames: comma separated list of device name(s) on which this workload
+        #              is to be simulated, or "cardINDEX" to generate device names
+        #              when larger batch of Pods is deployed
+        #   -max-index: if given, "INDEX" string in -devnames value is replaced
+        #               with value of (k8s env var) JOB_COMPLETION_INDEX % <max-index>
+        #               <-max-index>  <=  number of devices faked by the server
+        command: [
+          "/fakedev-workload",
+          "--name", "load-10-5min",
+          "--socket", "/sockdir/socket",
+          "--devices", "/tmp/fakedev/dev/dri/card*",
+          "--activity", "10:1:300",
+          "--repeat", "1"
+        ]
+        volumeMounts:
+        - name: socket
+          mountPath: /sockdir/socket
+      volumes:
+      - name: socket
+        hostPath:
+          path: /tmp/fakedev-exporter/socket
+          type: Socket
