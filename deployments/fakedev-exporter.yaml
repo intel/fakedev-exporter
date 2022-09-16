@@ -1,0 +1,71 @@
+# NOTE: this needs to be applied after: fakedev-exporter-serviceAccount.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fakedev-exporter
+  # run in same namespace as Prometheus, so Prometheus finds this
+  namespace: monitoring
+  labels:
+    app: fakedev-exporter
+spec:
+  selector:
+    matchLabels:
+      app: fakedev-exporter
+  template:
+    metadata:
+      labels:
+        app: fakedev-exporter
+    spec:
+      nodeSelector:
+        # deploy only on nodes where suitable faked GPU plugin runs
+        gpu.intel.com/platform_fake_DG1.present: "true"
+      serviceAccountName: gpu-monitor-service-account
+      initContainers:
+      - name: sockdir
+        image: busybox:stable
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          runAsUser: 0
+        # make sure exporter can create its socket in sockdir
+        command: [ "chown", "65534:root", "/sockdir" ]
+        volumeMounts:
+        - name: sockdir
+          mountPath: /sockdir
+      containers:
+      - name: fakedev-exporter
+        imagePullPolicy: Always
+        image: intel/fakedev-exporter:latest
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsUser: 65534
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop: [ "ALL" ]
+        # Prometheus metrics port
+        ports:
+        - containerPort: 9999
+          name: http
+        # other options:
+        # * "--count <x>": how many devices to fake when not requesting
+        #   'i915_monitoring' resource and scanning what it provided
+        # * "--wl-all": path to JSON config for base GPU load
+        command: [
+          "/fakedev-exporter",
+          "--socket",   "/sockdir/socket",
+          "--address",  ":9999",
+          "--count",    "8",
+          "--devlist",  "devices/devlist.json",
+          "--devtype",  "devices/dg1-4905.json",
+          "--identity", "identity/collectd.json"
+        ]
+        volumeMounts:
+        - name: sockdir
+          mountPath: /sockdir
+      volumes:
+      - name: sockdir
+        hostPath:
+          path: /tmp/fakedev-exporter
+          type: DirectoryOrCreate
