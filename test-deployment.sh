@@ -28,8 +28,11 @@ prof_ok="^ .* type *: *RuntimeDefault"
 prof_fail="^ .* type *: *Unconfined"
 readonly="^ *readOnlyRootFilesystem *:"
 escalation="^ *allowPrivilegeEscalation *:"
-for yaml in fakedev-exporter.yaml fakedev-workload-*.yaml; do
+for yaml in fakedev-exporter.yaml workloads/*.yaml; do
 	echo "$yaml:"
+	if [ ! -f "$yaml" ]; then
+		error_exit "'$yaml' missing"
+	fi
 	grep "$user" "$yaml"
 	if ! grep "$user" "$yaml" | grep -v -q root; then
 		error_exit "'$yaml' deployment uses 'root' user"
