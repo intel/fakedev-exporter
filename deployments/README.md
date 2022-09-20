@@ -51,6 +51,12 @@ For metrics reporting to work, _Prometheus_ and `fakedev-exporter`
 need to run in the same namespace.  If that's not the case, update
 everything shown by `git grep monitoring`.
 
+Workloads run in `validation` namespace.  If fake GPU plugin
+deployment did not provide that, add it with:
+```
+kubectl apply -f workloads/validation-namespace.yaml
+```
+
 
 ## Usage
 
