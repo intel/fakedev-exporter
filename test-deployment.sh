@@ -2,11 +2,12 @@
 # Copyright 2022 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 #
-# Script for checking fakedev-exporter deployment files security settings
+# Script for checking deployment files security settings
 
 LINE="-----------------------------"
 
 error_exit () {
+	echo "Usage: ${0##*/} [deployments dir]"
 	echo
 	echo "ERROR: $1!"
 	exit 1
@@ -15,8 +16,14 @@ error_exit () {
 echo "$LINE"
 echo "*** Check deployment security: ***"
 echo
-if ! cd "${0%/*}/deployments"; then
-	error_exit "fakedev-exporter 'deployments' dir missing"
+
+DIR="${0%/*}/deployments"
+if [ $# -gt 0 ]; then
+	DIR="$1"
+	shift
+fi
+if [ ! -d "$DIR" ]; then
+	error_exit "Deployments dir '$DIR' does not exist"
 fi
 
 # pod/container security context items
@@ -28,7 +35,7 @@ prof_ok="^ .* type *: *RuntimeDefault"
 prof_fail="^ .* type *: *Unconfined"
 readonly="^ *readOnlyRootFilesystem *:"
 escalation="^ *allowPrivilegeEscalation *:"
-for yaml in fakedev-exporter.yaml workloads/*.yaml; do
+for yaml in $(find "$DIR" -iname "*.yaml" -print0 | xargs -0 grep -ilE "containers:"); do
 	echo "$yaml:"
 	if [ ! -f "$yaml" ]; then
 		error_exit "'$yaml' missing"
