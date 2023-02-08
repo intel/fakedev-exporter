@@ -22,27 +22,28 @@ being present.
 
 For now, one needs to:
 
-1. Build related images manually from these WiP pull requests:
-   * GPU plugin: https://github.com/intel/intel-device-plugins-for-kubernetes/pull/1114
-   * Fake device generator: https://github.com/intel/intel-device-plugins-for-kubernetes/pull/1116
+1. Build "fake device generator" image manually from this pull request:
+   * https://github.com/intel/intel-device-plugins-for-kubernetes/pull/1328
 
-2. Push resulting images to a local registry, and apply following after updating image URLs:
-   * Their k8s integration: https://github.com/intel/intel-device-plugins-for-kubernetes/pull/1118
+2. Push resulting image to a local registry, and apply (WiP) k8s GPU
+   plugin [1] integration with it, after updating deployment image URL(s)
+   accordingly:
+   * https://github.com/intel/intel-device-plugins-for-kubernetes/pull/1118
 
-Note that fake GPU plugin provides same 'i915' GPU resource as real
-GPU plugin.
+If cluster runs both fake and real plugin configurations, fake GPU
+device plugin config should specify a different label for the fake
+nodes, that can be used with the `fakedev-exporter` (and its workload)
+deployment `nodeSelector`, like the example deployments do.
 
-If cluster runs both fake and real plugin versions, fake GPU plugin
-config should specify a different label for the fake nodes, that can
-be used with the `fakedev-exporter` (and its workload) deployment
-`nodeSelector`, like the example deployments do.
+[1] Intel GPU device plugin v0.25.0 (or newer) has support for the
+`-prefix` option required for GPU device faking.
 
 
 ### Other requirements
 
 GPU plugin uses NFD (node-feature-discovery) for labeling the nodes,
-so NFD is also needed.  See GPU plugin installation instructions:
-* https://github.com/intel/intel-device-plugins-for-kubernetes/tree/main/cmd/gpu_plugin
+so NFD is also needed.  See [GPU plugin installation
+instructions](https://github.com/intel/intel-device-plugins-for-kubernetes/tree/main/cmd/gpu_plugin/README.md).
 
 Finally, one needs to build `fakedev-exporter` image, push it to some
 registry and update its URLs to `fakedev-*.yaml` files.

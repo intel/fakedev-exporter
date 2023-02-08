@@ -19,5 +19,6 @@ all devices simulated for a node by "fakedev-exporter" are identical
 (for now) i.e. they will have same device ID and metric limits.
 
 See:
-* [design document](docs/README.md)
+* [Design document](docs/README.md)
+* [Deployment instructions](deployments/README.md)
 * [JSON example configs](configs/)
