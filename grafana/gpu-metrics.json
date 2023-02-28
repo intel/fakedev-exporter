@@ -1010,18 +1010,6 @@
           "interval": "",
           "legendFormat": "{{dev_file}} [{{pci_bdf}}/{{sub_dev}}] {{location}} {{direction}} ({{type}})",
           "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "000000005"
-          },
-          "exemplar": true,
-          "expr": "${exporter}_memory_ratio{node=\"$node\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{dev_file}} [{{pci_bdf}}/{{sub_dev}}] {{src}}",
-          "refId": "B"
         }
       ],
       "type": "timeseries"
