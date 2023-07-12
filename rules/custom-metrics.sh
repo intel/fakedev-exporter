@@ -57,7 +57,7 @@ fi
 
 header=$dir/header.yaml
 footer=$dir/footer.yaml
-if [ ! -f $header ] || [ ! -f $footer ]; then
+if [ ! -f "$header" ] || [ ! -f "$footer" ]; then
 	usage "$header / $footer missing"
 fi
 
@@ -75,7 +75,7 @@ echo "# GENERATOR: ${0##*/}"
 echo "# RULE FILE(s):$rules"
 echo "# CID/CARD/BDF: $*"
 
-cat $header
+cat "$header"
 for spec in "$@"; do
 	cid=${spec%%/*}
 	card=${spec%/*}
@@ -84,4 +84,4 @@ for spec in "$@"; do
 	# shellcheck disable=SC2086
 	sed -e "s/CID/$cid/g" -e "s/CARD/$card/g" -e "s/BDF/$bdf/g" $rules
 done
-cat $footer
+cat "$footer"
