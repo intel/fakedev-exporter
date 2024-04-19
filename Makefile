@@ -40,7 +40,7 @@ INVALID_SRC  = $(wildcard cmd/invalid-workload/*.go)
 
 # static binaries
 #
-# packages: golang (v1.18 or newer)
+# packages: golang
 static: fakedev-exporter fakedev-workload invalid-workload
 
 fakedev-exporter: $(EXPORTER_SRC)
