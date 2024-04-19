@@ -1,5 +1,9 @@
+# fakedev-exporter
 
-all: check static
+help:
+	@echo -e "\nTargets:\n$$(grep '^[a-z]*:' Makefile | sed -e 's/^/- /' -e 's/:$$//')\n"
+
+build: gocheck static
 
 # info embedded to the binary
 PROJECT=github.com/intel/fakedev-exporter
@@ -49,20 +53,8 @@ invalid-workload: $(INVALID_SRC)
 	go build $(BUILDMODE) -tags $(GOTAGS) -ldflags "$(LDFLAGS)" -o $@ $^
 
 
-# memory analysis binary versions
-#
-# packages: clang
-msan: fakedev-workload-msan fakedev-exporter-msan
-
-# "-msan" requires "CC=clang", dynamic
-fakedev-workload-msan: $(WORKLOAD_SRC)
-	CC=clang go build -msan $(BUILDMODE) -o $@ $^
-
-fakedev-exporter-msan: $(EXPORTER_SRC)
-	CC=clang go build -msan $(BUILDMODE) -o $@ $^
-
-
 # data race detection binaries
+
 race: fakedev-exporter-race
 
 # race detector does not work with PIE
@@ -74,26 +66,19 @@ fakedev-exporter-race: $(EXPORTER_SRC)
 BINDIR ?= $(shell pwd)
 
 # packages: wget psmisc diffutils
-test-msan: fakedev-exporter-msan fakedev-workload-msan invalid-workload
-	./test-exporter.sh \
-	  $(BINDIR)/fakedev-exporter-msan \
-	  $(BINDIR)/fakedev-workload-msan \
-	  $(BINDIR)/invalid-workload
-
-# packages: wget psmisc diffutils
 test-race: fakedev-exporter-race fakedev-workload invalid-workload
 	./test-exporter.sh \
 	  $(BINDIR)/fakedev-exporter-race \
 	  $(BINDIR)/fakedev-workload \
 	  $(BINDIR)/invalid-workload
 
-testall: test-race test-msan
+test: test-race
 	./test-deployment.sh
 
 
 # packages: golang-x-lint (Fedora)
 # or: go get -u golang.org/x/lint/golint
-check:
+gocheck:
 	go fmt ./...
 	golint ./...
 	go vet ./...
@@ -108,6 +93,8 @@ mod:
 shellcheck:
 	find . -name '*.sh' | xargs shellcheck
 
+check: gocheck shellcheck
+
 
 clean:
 	rm -rf fakedev-exporter fakedev-exporter-* \
@@ -117,5 +104,6 @@ clean:
 goclean: clean
 	go clean --modcache
 
-.PHONY: static msan race test-msan test-race testall \
-	check shellcheck mod clean goclean
+.PHONY: help build static race test-race test \
+	gocheck shellcheck check \
+	mod clean goclean
