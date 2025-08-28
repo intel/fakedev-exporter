@@ -1,3 +1,3 @@
-module fakedev-exporter
+module github.com/intel/fakedev-exporter
 
-go 1.22
+go 1.24
