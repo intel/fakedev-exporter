@@ -32,7 +32,7 @@ RUN make race static  && \
 
 
 # *** test stage ***
-FROM ubuntu:22.04
+FROM ubuntu:24.04 AS tester
 
 # tools used in testing: make, wget, killall, diff
 ENV DEBIAN_FRONTEND=noninteractive
@@ -63,7 +63,7 @@ COPY Makefile test-*.sh ./
 USER ${USER}
 
 # fail build if tests fail
-RUN make test-race
+RUN make test && echo "SUCCESS: $(date -I)" > test-status.txt
 
 
 # *** final stage ***
@@ -78,6 +78,9 @@ COPY --from=builder \
   ${BUILD_DIR}/fakedev-exporter \
   ${BUILD_DIR}/fakedev-workload \
   /
+
+# add dependency to test stage, so it's not skipped
+COPY --from=tester ${BUILD_DIR}/test-status.txt /
 
 # add config files + license
 COPY configs/ /
