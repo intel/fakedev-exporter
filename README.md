@@ -6,17 +6,22 @@ Fakedev-exporter
 simulated device metrics.  It is intended primarily for simulating
 GPUs, but could be configured to simulate also other devices.
 
-Eventual use-cases:
+Exporter will generate device metrics based on the device activity
+profiles specified for the deployed fake workloads.  Activity impact
+(e.g. when workloads share devices) is capped by the specified fake
+device limits.
+
+Potential use-cases:
 * Driver-less E2E Kubernetes device metrics handling validation
 * Simulating per-pod device cgroup metrics and limits
 * Device handling scalability testing
 * Simulating hard to get device HW
 
-Because Kubernetes does not support per-device resources, only
+Note: because Kubernetes does not support per-device resources, only
 per-node ones, all device resource handling in Kubernetes assumes
 devices (on a given node) to have identical capabilities.  Therefore
-all devices simulated for a node by "fakedev-exporter" are identical
-(for now) i.e. they will have same device ID and metric limits.
+all devices simulated for a node by "fakedev-exporter" are (currently)
+identical i.e. they will have same device ID and metric limits.
 
 See:
 * [Design document](docs/README.md)

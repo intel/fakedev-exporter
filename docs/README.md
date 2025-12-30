@@ -2,8 +2,8 @@
 Fakedev-exporter design
 =======================
 
-NOTE: Information below describes the eventual design goals, not
-necessarily the current design.
+NOTE: Information below describes the eventual design goals.  Items
+that have not been implemented yet, are marked with TODOs.
 
 Contents:
 * [Terminology](#terminology)
@@ -12,7 +12,7 @@ Contents:
 * [Workloads](#workloads)
 * [Workload simulation](#workload-simulation)
 * [Device simulation](#device-simulation)
-* [Initialization](#initialization)
+* [Server initialization](#server-initialization)
 * [Threading](#threading)
 
 
@@ -36,10 +36,10 @@ Options allow setting following:
 Metric exporting
 ----------------
 
-HTTP-server thread(s) answer metric queries.
+HTTP-server thread(s) in _fakedev-exporter_ answer metric queries.
 
-When queried, it gets metrics values and their labels for each device
-+ WL, and outputs that back to the HTTP connection in Prometheus ASCII
+When queried, they get metric values and their labels for each device
++ WL, and output that back to the HTTP connection in Prometheus ASCII
 format.  WL metrics are used for per-pod/-container metrics.
 
 
@@ -57,12 +57,12 @@ Fake WL program takes following options:
     - `sh -c fakedev-workload --devnames cardINDEX --max-index 120 ...`
     - Where INDEX is replaced with JOB_COMPLETION_INDEX % max-index, see:
       https://kubernetes.io/docs/tasks/job/indexed-parallel-processing-static/
-  * Metric limit values
+  * Metric limit values (when k8s resource limits specified for WL pod)
 
 And does following:
 * Find out which device(s) are mapped to its container,
   if device names are not explicitly specified
-* Connect to "fakedev-exporter" server
+* Connect to _fakedev-exporter_ server
 * Provide device indices and option values to server
 * Sleep waiting a reply telling WL to terminate
   - Or if connection drops, exit with an error
@@ -82,8 +82,8 @@ Workload simulation
   per-device metric state), an activity profile, list of devices
   and which workloads are mapped to them
 * WL can also specify what are its memory and runtime limitations
-* If either GPU or WL metric limit is reached, tells WL to exit(1)
-  with "Limit <X> reached, terminated" log message
+* TODO: If WL metric limit is reached, tell WL to exit(1) with
+  "Limit <X> reached, terminated" log message
 * When end of activity list is reached, tells WL to exit(0) with OK msg
 * Drops WL and its connection after telling it to exit
 
@@ -107,27 +107,26 @@ values are scaled by simulated device values when added.
 Device simulation
 -----------------
 
-Program main loop runs the simulation loop at given interval:
+Simulation loop is run at fixed interval:
 * Go through each metric in each active WL and sum their current
   metric values together, for each device associated with them
-  - If WL addition crosses device metric termination limit,
-    tell WL to terminate and remove WL
-* Constrain resulting per-device metric values to specified min-max range
-  and update current per-device metric values accordingly
-* Update dependent metrics values based on configured metric relations
-* Update WL metric values and if they cross WL metric termination limit,
+* Constrain resulting per-device metric values to specified device min-max
+  range and update current per-device metric values accordingly
+* TODO: If total device usage was over max value and had to be capped,
+  extend WL activity deadlines relative to the resulting usage throttling
+* TODO: Update WL metric values and if they cross limit specified by the WL,
   tell WL to terminate + remove it
-* Check activity deadlines for each WL, and advance them or drop the WL
+* Check activity deadlines for each WL and advance them, or tell WL
+  to terminate + remove it
 
 
-Initialization
---------------
+Server initialization
+---------------------
 
-At start, this reads device configuration file specifying:
+At start, server reads device configuration file specifying:
 * Device and sub-device count + potential other topology info
 * Min and max values for each metric, and:
   - which metrics are for device, and which for sub-device
-  - which metric limits cause WL termination
 * Relations for dependent metrics
 * Device label information added to all metrics
 * Multi-value per-metric labels, i.e. extra metric dimensions
@@ -146,15 +145,6 @@ to be separated from actual metric simulation.
 Then a list of devices / sub-devices is created, each with list of
 specified primary & dependent metrics, set to their minimum and
 dependent values.
-
-Potential dependency rules for GPU metrics could be following:
-* GPU hang -> 100% freq time
-* Engine usage -> GPU frequency change ratio
-* Mem / fabric BW usage -> mem frequency change ratio
-* Frequency / engine / BW usage  -> GPU / mem power change ratio
-* Power -> temperature change ratio + delay
-* Temperature limit -> throttling time
-* Throttling time -> Frequency / BW limit
 
 
 Threading
